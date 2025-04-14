@@ -7,6 +7,7 @@ const { ExpressPeerServer } = require('peer');  // Importa ExpressPeerServer cor
 const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, {
+  path: '/socket.io',
   cors: {
     origin: '*', // Permite conexiones desde cualquier origen (en producción, restringe esto)
   },
