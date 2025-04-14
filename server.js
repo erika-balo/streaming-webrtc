@@ -14,18 +14,18 @@ const io = socketIo(server, {
 
 app.use(cors());
 
-const host_id = null
+let host_id = null
 io.on('connection', (socket) => {
-  console.log('Usuario conectado:', socket.id);
+  console.log('Usuario conectado:', socket.id, host_id);
   
   if(host_id){
-    socket.emit('stream-started', {id: host_id});
+    io.emit('in_streaming', {id: host_id});
   }
 
   // Escuchar cuando el host inicia la transmisión
   socket.on('start-stream', (streamData) => {
     console.log('Transmisión iniciada', streamData);
-    host_id = streamData.id
+    host_id = streamData.peerId
     io.emit('stream-started', streamData);
   });
 
@@ -37,11 +37,15 @@ io.on('connection', (socket) => {
   socket.on('stop-streaming', () => {
     console.log('Transmision detenida:');
     host_id = null;
-    socket.emit('stream-stopped');
+    io.emit('stream-stopped');
   });
 });
 
 const PORT = 3000;
 server.listen(PORT, () => {
-  console.log(`Servidor escuchando en http://localhost:${PORT}`);
+  console.log(`Servidor escuchando en ${PORT}`);
+});
+
+app.get('/test', (req, res) => {
+  res.send('Servidor de streaming en funcionamiento');
 });
